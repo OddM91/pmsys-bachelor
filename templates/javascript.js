@@ -14,7 +14,15 @@ $(function(){
     dateControl2.value = date2;
 
     // Initial fetch of stats for testing
-    $.get("/api/stats", function (data){
+
+    let reportInput = $("#report").val();
+    let starttimeInput = $("#start_time").val();
+    let endtimeInput = $("#end_time").val();
+    let teamInput = $("#team").val();
+
+    url = "/api/stat?report=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput;
+
+    $.get(url, function (data){
         console.log("Fetching stats");
 
 
@@ -60,13 +68,36 @@ function displayStats(data){
         // Removing the time of day and year to make it look clearner. 
     }
 
-    $("#textbox").html(days);
+    // $("#textbox").html(days);
 
     var chart = c3.generate({
         bindto: '#chart',
         data: {
           columns: [stats],
-          type: 'bar'
+          type: 'bar',
+          onclick: function (d, i) { 
+                console.log("onclick", d, i);
+                let date = new Date($("#start_time").val());
+                date.setDate(date.getDate() + d.index);
+                let month_format = parseInt(date.getMonth()) + 1;
+                console.log("Checking Month: " + month_format);
+                let date_formated = date.getFullYear() + "-" + month_format + "-" + date.getDate();
+                console.log(date_formated)
+                
+                let url = "/api/stat/absence?team=" + $("#team").val() + "&&date=" + date_formated + "&&schema=" + $("#report").val();
+
+                $.get(url, function (data){
+                    console.log(data);
+                    
+                    let output = "";
+                    for (let i in data){
+                        output += data[i][0] + "<br />";
+                    }
+                    $("#textbox").html(date + "<br />" + output);
+
+                });
+                
+            },
         },
         axis: {
             x: {
@@ -85,10 +116,9 @@ function displayStats(data){
                     text: 'Reports',
                     position: 'outer-middle'
                 },
-                max: 30,
                 min: 0
             }
-        }
+        }    
     });
 
 }
