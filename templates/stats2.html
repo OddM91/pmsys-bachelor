@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>PMSYS</title>
+    <title>PMSYS Version 2</title>
 
     <!-- CSS import 
     <link rel="stylesheet" href="{{ url_for('static', filename='templates/stats.css') }}">-->
@@ -17,34 +17,33 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
    
     <style>
-      body{
-        margin: 0;
-        background-color: aqua;
-      }
-      .container{
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-      }
-      #intro-text{
-        width: 80%;
-        text-align: center;
-      }
-    </style>
-    
+        body{
+          margin: 0;
+        }
+        .container{
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          align-items: center;
+        }
+        #intro-text{
+          width: 80%;
+          text-align: center;
+        }
+      </style>
 </head>
 <body>
     <center><h1><a href="{{ url_for('version1') }}">Version 1</a> - <a href="{{ url_for('version2') }}">Version 2</a> - <a href="{{ url_for('version3') }}">Version 3</a></h1></center>
-    <div class="container"><div id="intro-text"><h5>Version 1 has a bar design, grouping bars next to each other for each report type selected. You can click each individual bar and it will display a list of who hasn't reported that day. </h5></div></div>
+    <div class="container"><div id="intro-text"><h5>Version 2 has a line design, this might be more visually pleasing when viewing a longer timeframe. However it isn't possible to interact with overlapping datapoints and so if there are overlap in a point of interest you can turn off a report below the graph. Clicking a point will display all players on the team. Those who have reported in green and those who have not in red. </h5></div>
+    <div id="everythingelse">
     <form action="#">
       <div id="checkboxlist">
-          <label for="report">Reports: </label>
+          <label for="report">Reports:</label>
           <input type="checkbox" onclick="checkall(this)" id="all" class="selectall" value="Select All">
           <label for="all">Select All</label>
           <input type="checkbox" id="wellness" name="reports" value="wellness" checked>
           <label for="wellness">Wellness</label>
-          <input type="checkbox" id="participation" name="reports" value="participation" checked>
+          <input type="checkbox" id="participation" name="reports" value="participation">
           <label for="participation">Participation</label>
           <input type="checkbox" id="spre" name="reports" value="srpe">
           <label for="spre">SRPE</label>
@@ -62,7 +61,7 @@
         <input type="submit" class="btn btn-primary" id="show-rep-btn" value="Show Reported" onclick="showAttendance()" />
         <input type="submit" class="btn btn-secondary" id="not-rep-btn" value="Show NOT Reported" onclick="showAbsence()" />
     </form>
-    
+</div></div>
     <div id="chart"></div>
     <div id="textbox"></div>
 
@@ -73,7 +72,7 @@
     <script src="{{ url_for('static', filename='templates/c3/c3.min.js') }}"></script>
 
     <!-- Javascript import -->
-    <script src="{{ url_for('static', filename='templates/javascript.js') }}"></script>
+    <script src="{{ url_for('static', filename='templates/javascript2.js') }}"></script>
 
     
 </body>

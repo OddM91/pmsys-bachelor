@@ -23,21 +23,18 @@ $(function(){
 
     // Initial fetch of stats from the last week. 
 
-    let reportInput = $("input[type=checkbox][name=reports]:checked").map(function(){
-        return $(this).val();
-    }).get();
+    let reportInput = $("#report").val();
     let starttimeInput = $("#start_time").val();
     let endtimeInput = $("#end_time").val();
     let teamInput = $("#team").val();
 
     // Because of testing reasons I override the input with static input for more reasonable opening view. 
-    
+    reportInput = "wellness";
     starttimeInput = "2021-05-01";
     endtimeInput = "2021-05-31";
     teamInput = "59b8149";
 
-    url = "/api/stat?report=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput  + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
-    
+    url = "/api/stat?report=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
 
     $.get(url, function (data){
         console.log("Fetching stats");
@@ -61,7 +58,8 @@ function showAttendance(){
     btn.innerHTML = "Show NOT Reported";
     document.getElementById("not-rep-btn").classList.remove("btn-primary");
     document.getElementById("not-rep-btn").classList.add("btn-secondary");
-    
+
+
     // Getting the current values
     let reportInput = $("input[type=checkbox][name=reports]:checked").map(function(){
         return $(this).val();
@@ -102,12 +100,30 @@ function showAbsence(){
     let teamInput = $("#team").val();
     
     // This URI will return how many HASN'T reported for each day within the date range. 
-    url = "/api/stat/onlyabsent?report=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
+    url = "/api/stat/onlyabsent?report=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput  + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
     console.log("Trying to fetch: " + url);
 
     $.get(url, function(data){
         displayStats(data);
     });
+}
+
+function ignorePlayer(name, id){
+    let ignore_list = JSON.parse(localStorage.getItem("ignored_players"));
+    ignore_list.push(name);
+    console.log(ignore_list);
+    localStorage.setItem("ignored_players", JSON.stringify(ignore_list));
+    var btn = document.getElementById(id);
+    btn.innerHTML = "Ignored";
+    document.getElementById(id).classList.remove("btn-info");
+    document.getElementById(id).classList.add("btn-dark");
+    let report_display_check = document.getElementById("show-rep-btn");
+    if (report_display_check.classList.contains("btn-primary")){
+        showAttendance();
+    }
+    else{
+        showAbsence();
+    }
 }
 
 function displayStats(data){
@@ -143,7 +159,7 @@ function displayStats(data){
         bindto: '#chart',
         data: {
           columns: stats,
-          type: 'bar',
+          type: 'line',
           onclick: function (d, i) { 
                 console.log("onclick", d, i);
                 
@@ -154,19 +170,24 @@ function displayStats(data){
                 let date_formated = date.getFullYear() + "-" + month_format + "-" + date.getDate();
                 console.log(date_formated)
                 
-                let url = "/api/stat/absence/name?team=" + $("#team").val() + "&&date=" + date_formated + "&&schema=" + d.id;
+                let url = "/api/stat/absence/name/all?team=" + $("#team").val() + "&&date=" + date_formated + "&&schema=" + d.id + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
 
                 $.get(url, function (data){
                     console.log(data);
                     
-                    let output = "";
-                    if(data[0].length > 0){
-                        for (let i in data[0]){
-                            output += data[0][i] + "<br />";
-                        }
-                    }else{
-                        output = "No missing reports."
+                    let output = "<table>";
+                    let id = 0
+                    
+                    for (let i in data[0]){
+                        output += "<tr><td><span style=\"color: red;\">" + data[0][i] + "</span></td><td><button id=\""+ id + "\" class=\"btn btn-info mx-auto\" value=\"ignore\" onclick=\"ignorePlayer(\'"+ data[0][i] + "\', " + id + ")\">Ignore</button></td></tr>";
+                        id += 1;
                     }
+                    for (let i in data[1]){
+                        output += "<tr><td><span style=\"color: green;\">" + data[1][i] + "</span></td><td><button id=\""+ id + "\" class=\"btn btn-info mx-auto\" value=\"ignore\" onclick=\"ignorePlayer(\'"+ data[1][i] + "\', " + id + ")\">Ignore</button></td></tr>";
+                        id += 1;
+                    }
+                    output += "</table>"
+                    
                     report_name = d.id.charAt(0).toUpperCase() + d.id.slice(1);
                     $("#textbox").html("<h4>" + report_name + " - " + date.toDateString().split(' ').slice(1, 3).join(' ') + "</h4>" + output);
 
@@ -174,40 +195,10 @@ function displayStats(data){
                 
             },
         },
-        /*tooltip: {
-            contents: function (d, defaultTitleFormat, defaultValueFormat, color){
-                console.log("tooltip", d);
-                
-                let date = new Date($("#start_time").val());
-                date.setDate(date.getDate() + d.index);
-                let month_format = parseInt(date.getMonth()) + 1;
-                console.log("Checking Month: " + month_format);
-                let date_formated = date.getFullYear() + "-" + month_format + "-" + date.getDate();
-                console.log(date_formated)
-                
-                let url = "/api/stat/absence/name?team=" + $("#team").val() + "&&date=" + date_formated + "&&schema=" + d.id;
-
-                let output = `<table class='${this.CLASS.tooltip}'><th>Not Reported </th><tbody>`;
-                $.get(url, function (data){
-                    console.log(data);
-                    
-                    if(data[0].length > 0){
-                        for (let i in data[0]){
-                            output += "<tr><td>" + data[0][i] + "</td></tr>";
-                        }
-                    }else{
-                        output = "None."
-                    }
-                    report_name = d.id.charAt(0).toUpperCase() + d.id.slice(1);
-                    // $("#textbox").html("<h4>" + report_name + " - " + date.toDateString().split(' ').slice(1, 3).join(' ') + "</h4>" + output);
-
-                });
-                return `</tbody></table>`
-            }
-        },*/
         axis: {
             x: {
                 label: {
+                    
                     position: 'outer-center'
                 },
                 type: 'category',
@@ -217,7 +208,6 @@ function displayStats(data){
                     width: 30,
                     fit: false
                 }
-                
             },
             y: {
                 label: {

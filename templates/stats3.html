@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>PMSYS</title>
+    <title>PMSYS Version 3</title>
 
     <!-- CSS import 
     <link rel="stylesheet" href="{{ url_for('static', filename='templates/stats.css') }}">-->
@@ -15,11 +15,19 @@
 
     <!-- Bootstrap 4 import -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-   
-    <style>
+   <style>
+       .report-array-style{
+           border-collapse: collapse;
+           text-align: center;
+           
+           table-layout: auto;
+       }
+        table, th, td {
+            border: 1px solid black;
+        }
+
       body{
         margin: 0;
-        background-color: aqua;
       }
       .container{
         display: flex;
@@ -30,27 +38,26 @@
       #intro-text{
         width: 80%;
         text-align: center;
-      }
-    </style>
+      }      
+   </style>
     
 </head>
 <body>
     <center><h1><a href="{{ url_for('version1') }}">Version 1</a> - <a href="{{ url_for('version2') }}">Version 2</a> - <a href="{{ url_for('version3') }}">Version 3</a></h1></center>
-    <div class="container"><div id="intro-text"><h5>Version 1 has a bar design, grouping bars next to each other for each report type selected. You can click each individual bar and it will display a list of who hasn't reported that day. </h5></div></div>
+    <div class="container"><div id="intro-text"><h5>Version 3 is a concept where you can see all reports for the current day and whether they have been reported or not. If they are not reported you can press "Notify" and it would send a notification to the player. Once you click the button it will change to "Notified" so you can keep track on who you have notified and not, but you can keep pressing the button to send more if they keep ignoring it. </h5></div>
+    <div id="the-rest">
     <form action="#">
       <div id="checkboxlist">
-          <label for="report">Reports: </label>
-          <input type="checkbox" onclick="checkall(this)" id="all" class="selectall" value="Select All">
+          <label for="report">Reports</label>
+          <input type="checkbox" onclick="checkall(this)" id="all" class="selectall" value="Select All" checked>
           <label for="all">Select All</label>
           <input type="checkbox" id="wellness" name="reports" value="wellness" checked>
           <label for="wellness">Wellness</label>
           <input type="checkbox" id="participation" name="reports" value="participation" checked>
           <label for="participation">Participation</label>
-          <input type="checkbox" id="spre" name="reports" value="srpe">
+          <input type="checkbox" id="spre" name="reports" value="srpe" checked>
           <label for="spre">SRPE</label>
       </div>
-        <label for="start_time">Time</label>
-        <input type="date" id="start_time" name="start_time">
         <label for="end_time">Time</label>
         <input type="date" id="end_time" name="end_time">
         <label for="team">Team</label>
@@ -59,13 +66,15 @@
           <option value="59b8148">Team 2</option>
           <option value="59b6e">Team 3</option>
         </select>
-        <input type="submit" class="btn btn-primary" id="show-rep-btn" value="Show Reported" onclick="showAttendance()" />
-        <input type="submit" class="btn btn-secondary" id="not-rep-btn" value="Show NOT Reported" onclick="showAbsence()" />
+        <input type="submit" value="Reports" onclick="showAttendance()" />
     </form>
     
     <div id="chart"></div>
     <div id="textbox"></div>
-
+    <div id="report_array">
+        
+    </div>
+    </div></div>
 
 
     <!-- Load d3.js and c3.js -->
@@ -73,7 +82,7 @@
     <script src="{{ url_for('static', filename='templates/c3/c3.min.js') }}"></script>
 
     <!-- Javascript import -->
-    <script src="{{ url_for('static', filename='templates/javascript.js') }}"></script>
+    <script src="{{ url_for('static', filename='templates/javascript3.js') }}"></script>
 
     
 </body>

@@ -16,3 +16,10 @@ select {
     margin-bottom: 10px;
     margin-top: 10px;
   }
+
+.red-text{
+  color: red;
+}
+.green-text{
+  color: lightgreen;
+}
