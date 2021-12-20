@@ -29,15 +29,9 @@ def version2():
 def version3():
     return flask.render_template("stats3.html")
 
-@app.route("/api/stats", methods=["GET"])
-def getStats():
-    cur = conn.cursor()
-    cur.execute("SELECT DATE(created), count(*) FROM datapoints WHERE schema_name='wellness' GROUP BY DATE(created) ORDER BY DATE(created) LIMIT 50;")
-    db_query = cur.fetchall()
 
-    json = flask.jsonify(db_query)
-    return json
 
+# Used in Version 1 and 2 for inital load, and in showAttendance to generate graph. 
 @app.route("/api/stat", methods=["GET"])
 def getReportStat():
     args1 = flask.request.args.get("report")
@@ -71,6 +65,8 @@ def getReportStat():
 
     return flask.jsonify(all_data)
 
+
+# Used in Version 1 and 2 in showAbsence to generate graph. 
 @app.route("/api/stat/onlyabsent", methods=["GET"])
 def getReportStatOnlyAbsent():
     args1 = flask.request.args.get("report")
@@ -111,6 +107,7 @@ def getReportStatOnlyAbsent():
     return flask.jsonify(all_data)
 
 
+# Used in Version 1 for the onclick on the graphs to return list of names absence. 
 @app.route("/api/stat/absence/name", methods=["GET"])
 def getAbsenceReport():
     args1 = flask.request.args.get("team")
@@ -137,6 +134,8 @@ def getAbsenceReport():
 
     return flask.jsonify(all_data)
 
+
+# Used in Version 2 to get all names in addition to who is absent or not. 
 @app.route("/api/stat/absence/name/all", methods=["GET"])
 def getAllNamesForReport():
     args1 = flask.request.args.get("team")
@@ -185,6 +184,8 @@ def getAllNamesForReport():
 
     return flask.jsonify(all_data)
 
+
+# Used in Version 3 to get report status for a single day. 
 @app.route("/api/stat/report/today", methods=["GET"])
 def getTodaysReport():
     args1 = flask.request.args.get("team")
