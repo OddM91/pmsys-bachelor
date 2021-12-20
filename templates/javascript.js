@@ -70,11 +70,8 @@ function showAttendance(){
     let endtimeInput = $("#end_time").val();
     let teamInput = $("#team").val();
 
-    console.log(reportInput);
-    
     // This URI will return how many reports where submitted between the selected dates. 
     url = "/api/stat?report=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
-    console.log("Trying to fetch: " + url);
 
     $.get(url, function(data){
         displayStats(data);
@@ -103,7 +100,6 @@ function showAbsence(){
     
     // This URI will return how many HASN'T reported for each day within the date range. 
     url = "/api/stat/onlyabsent?report=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
-    console.log("Trying to fetch: " + url);
 
     $.get(url, function(data){
         displayStats(data);
@@ -114,8 +110,6 @@ function displayStats(data){
     
     // First it creates the Stats array, this first word put in will be the name of the collums shown under the grid. 
     // It will then go through the data sent in and add it to the stats array in a clean format.  
-    console.log("Checking DisplayStats input: ")
-    console.log(data)
     let stats = [];
     let days = [];
     let by_report_array = []
@@ -131,12 +125,9 @@ function displayStats(data){
                 // Removing the time of day and year to make it look clearner.
             }
         }
-        console.log(by_report_array);
-        console.log(days)
+        
         stats.push(by_report_array)
     }
-    console.log("All Done, looks like this: ");
-    console.log(stats);
 
     // Makes the gird. It will also make an onClick function for each bar in the chart that will look up in the database who is missing from the reports. 
     var chart = c3.generate({
@@ -145,19 +136,15 @@ function displayStats(data){
           columns: stats,
           type: 'bar',
           onclick: function (d, i) { 
-                console.log("onclick", d, i);
                 
                 let date = new Date($("#start_time").val());
                 date.setDate(date.getDate() + d.index);
                 let month_format = parseInt(date.getMonth()) + 1;
-                console.log("Checking Month: " + month_format);
                 let date_formated = date.getFullYear() + "-" + month_format + "-" + date.getDate();
-                console.log(date_formated)
                 
                 let url = "/api/stat/absence/name?team=" + $("#team").val() + "&&date=" + date_formated + "&&schema=" + d.id;
 
                 $.get(url, function (data){
-                    console.log(data);
                     
                     let output = "";
                     if(data[0].length > 0){

@@ -1,8 +1,5 @@
 import flask
 import psycopg2
-# from flask_sqlalchemy import SQLAlchemy
-# from flask_migrate import Migrate
-# from models import db, Pmsys_model
 
 app = flask.Flask(__name__, static_folder="/", static_url_path="")
 
@@ -70,10 +67,7 @@ def getReportStat():
         cur.execute("SELECT DATE(created), count(DISTINCT owner) FROM datapoints WHERE schema_name='{}' AND created>='{}' AND created<='{}' AND owner LIKE '%{}%' AND owner NOT IN {} GROUP BY DATE(created) ORDER BY DATE(created);".format(r, args2, args4, args3, ignore_string))
         db_query = cur.fetchall()
         db_query.insert(0, r)
-        print("DB Query in Loop {} gives result: {}".format(r, db_query))
         all_data.append(db_query)
-
-    # print("All Data: {}".format(all_data))
 
     return flask.jsonify(all_data)
 
@@ -140,7 +134,6 @@ def getAbsenceReport():
 
         db_query = cur.fetchall()
         all_data.append(db_query)
-        print(all_data)
 
     return flask.jsonify(all_data)
 
@@ -212,14 +205,10 @@ def getTodaysReport():
 
     db_list = [list(i) for i in db_query]  # Converts to list. I can not change a tuple which is what the queries gets me.
 
-    print("Here is the new list")
-    print(db_list)
-
     # Fills the list with the name of all players.
     for n in db_list:
         all_data.append(n)
 
-    
 
     for r in reports:
         cur.execute("""SELECT DISTINCT owner 
@@ -230,13 +219,11 @@ def getTodaysReport():
         db_list = [list(i) for i in db_query]
         for n in all_data:
             try:
-                print(n[0])
                 x = [n[0]]      # As this is an array of names the name searched for needs to also be in an array to find identical searches. 
                 report_check = db_list.index(x)
             except ValueError:
                 report_check = -1
 
-            print(report_check)
             if report_check != -1:
                 n.append(1)
             else:

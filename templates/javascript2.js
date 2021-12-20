@@ -68,11 +68,9 @@ function showAttendance(){
     let endtimeInput = $("#end_time").val();
     let teamInput = $("#team").val();
 
-    console.log(reportInput);
-    
     // This URI will return how many reports where submitted between the selected dates. 
     url = "/api/stat?report=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
-    console.log("Trying to fetch: " + url);
+
 
     $.get(url, function(data){
         displayStats(data);
@@ -101,7 +99,6 @@ function showAbsence(){
     
     // This URI will return how many HASN'T reported for each day within the date range. 
     url = "/api/stat/onlyabsent?report=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput  + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
-    console.log("Trying to fetch: " + url);
 
     $.get(url, function(data){
         displayStats(data);
@@ -111,7 +108,6 @@ function showAbsence(){
 function ignorePlayer(name, id){
     let ignore_list = JSON.parse(localStorage.getItem("ignored_players"));
     ignore_list.push(name);
-    console.log(ignore_list);
     localStorage.setItem("ignored_players", JSON.stringify(ignore_list));
     var btn = document.getElementById(id);
     btn.innerHTML = "Ignored";
@@ -130,8 +126,7 @@ function displayStats(data){
     
     // First it creates the Stats array, this first word put in will be the name of the collums shown under the grid. 
     // It will then go through the data sent in and add it to the stats array in a clean format.  
-    console.log("Checking DisplayStats input: ")
-    console.log(data)
+
     let stats = [];
     let days = [];
     let by_report_array = []
@@ -147,12 +142,9 @@ function displayStats(data){
                 // Removing the time of day and year to make it look clearner.
             }
         }
-        console.log(by_report_array);
-        console.log(days)
+
         stats.push(by_report_array)
     }
-    console.log("All Done, looks like this: ");
-    console.log(stats);
 
     // Makes the gird. It will also make an onClick function for each bar in the chart that will look up in the database who is missing from the reports. 
     var chart = c3.generate({
@@ -161,19 +153,15 @@ function displayStats(data){
           columns: stats,
           type: 'line',
           onclick: function (d, i) { 
-                console.log("onclick", d, i);
                 
                 let date = new Date($("#start_time").val());
                 date.setDate(date.getDate() + d.index);
                 let month_format = parseInt(date.getMonth()) + 1;
-                console.log("Checking Month: " + month_format);
                 let date_formated = date.getFullYear() + "-" + month_format + "-" + date.getDate();
-                console.log(date_formated)
                 
                 let url = "/api/stat/absence/name/all?team=" + $("#team").val() + "&&date=" + date_formated + "&&schema=" + d.id + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
 
                 $.get(url, function (data){
-                    console.log(data);
                     
                     let output = "<table>";
                     let id = 0
