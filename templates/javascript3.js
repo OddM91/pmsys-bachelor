@@ -99,7 +99,7 @@ function showAttendance(){
         return $(this).val();
     }).get();
 
-    url = "/api/stat/report/today?date=" + currentday + "&&team=" + teamInput + "&&reports=" + reportInput;
+    url = "/api/stat/report/today?end_time=" + currentday + "&&team=" + teamInput + "&&reports=" + reportInput;
 
     $.get(url, function (data){
         console.log("Fetching stats");

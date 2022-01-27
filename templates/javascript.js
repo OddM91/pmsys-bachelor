@@ -31,18 +31,18 @@ $(function(){
     let teamInput = $("#team").val();
 
     // Because of testing reasons I override the input with static input for more reasonable opening view. 
-    
     starttimeInput = "2021-05-01";
     endtimeInput = "2021-05-31";
     teamInput = "59b8149";
 
-    url = "/api/stat?report=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput  + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
+    url = "/api/stats/initv1?reports=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput  + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
     
 
     $.get(url, function (data){
         console.log("Fetching stats");
 
-        displayStats(data);
+        displayStats(data[0]);
+        displayArray(data[1]);
 
     });
 
@@ -71,10 +71,10 @@ function showAttendance(){
     let teamInput = $("#team").val();
 
     // This URI will return how many reports where submitted between the selected dates. 
-    url = "/api/stat?report=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
+    url = "/api/stat?reports=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
 
     $.get(url, function(data){
-        displayStats(data);
+        displayStats(data[0]);
     });
 
 }
@@ -99,10 +99,10 @@ function showAbsence(){
     let teamInput = $("#team").val();
     
     // This URI will return how many HASN'T reported for each day within the date range. 
-    url = "/api/stat/onlyabsent?report=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
+    url = "/api/stat/onlyabsent?reports=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
 
     $.get(url, function(data){
-        displayStats(data);
+        displayStats(data[0]);
     });
 }
 
@@ -155,7 +155,7 @@ function displayStats(data){
                         output = "No missing reports."
                     }
                     report_name = d.id.charAt(0).toUpperCase() + d.id.slice(1);
-                    $("#textbox").html("<h4>" + report_name + " - " + date.toDateString().split(' ').slice(1, 3).join(' ') + "</h4>" + output);
+                    $("#right-text").html("<h4>" + report_name + " - " + date.toDateString().split(' ').slice(1, 3).join(' ') + "</h4><h6>Missing Players: </h6>" + output);
 
                 });
                 
@@ -222,6 +222,62 @@ function displayStats(data){
         }    
     });
 
+}
+
+function displayArray(data){
+
+    let teamInput = $("#team").val();
+
+    teamInput = checkTeam(teamInput);
+
+    // Not a lot of days and teams make sense to observe so these are put here as default for testing. 
+    // teamInput = "Team 3"
+
+    output = "<h5>Today's reports for " + teamInput + "</h5>";
+
+    output += "<table class=\"report-array-style\">";
+
+    // Prints Headers, meaning the name of the reports.
+    output += "<th>"
+    for (let r in data[0]){
+        output += "<td style=\"width: 120px;>\">" + data[0][r] + "</td>";
+    }
+    output += "</th>"
+
+    for (let d in data){
+        // skipping headers.
+        if (d == 0)
+            continue;
+        output += "<tr>"
+        for (let i in data[d]){
+            if (data[d][i] == 1)
+                output += "<td style=\"background-color: lawngreen;\">OK</td>";
+            else if (data[d][i] == 0)
+                output += "<td style=\"background-color: red;\"><button id=\""+ d + i + "\" class=\"btn btn-dark mx-auto\" value=\"notify\" onclick=\"notify(\'"+ data[d][0] + "\', \'" + data[0][i-1] + "\', "+ d + i + ")\">NOTIFY!</button></td>";
+            else
+                output += "<td>" + data[d][i] + "</td>";
+        }
+        output += "</tr>"
+        
+    }    
+    output += "</table>"
+    $("#left-text").html(output);
+    
+}
+
+function notify(name, report, id){
+    var btn = document.getElementById(id);
+    btn.innerHTML = "Notifed";
+    alert("Sent notification to: " + name + "\nFor report: " + report);
+}
+
+function checkTeam(teamid){
+    if(teamid == "59b8149")
+        return "Team 1";
+    else if (teamid == "59b8148")
+        return "Team 2";
+    else 
+        return "Team 3";
 }
 
 function checkall(source){

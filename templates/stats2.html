@@ -20,6 +20,17 @@
         body{
           margin: 0;
         }
+
+        .report-array-style{
+           border-collapse: collapse;
+           text-align: center;
+           
+           table-layout: auto;
+       }
+        table, th, td {
+            border: 1px solid black;
+        }
+        
         .container{
           display: flex;
           flex-direction: column;
@@ -30,10 +41,17 @@
           width: 80%;
           text-align: center;
         }
+
+        .toolcolor{
+          width: 10px;
+          height: 10px;
+          border: 1px solid rgba(0, 0, 0, .2);
+          
+        }
       </style>
 </head>
-<body>
-    <center><h1><a href="{{ url_for('version1') }}">Version 1</a> - <a href="{{ url_for('version2') }}">Version 2</a> - <a href="{{ url_for('version3') }}">Version 3</a></h1></center>
+<body>           <!--  Currently not in use:  - <a href="{{ url_for('version3') }}">Version 3</a>  -->
+    <center><h1><a href="{{ url_for('version1') }}">Version 1</a> - <a href="{{ url_for('version2') }}">Version 2</a></h1></center>
     <div class="container"><div id="intro-text"><h5>Version 2 has a line design, this might be more visually pleasing when viewing a longer timeframe. However it isn't possible to interact with overlapping datapoints and so if there are overlap in a point of interest you can turn off a report below the graph. Clicking a point will display all players on the team. Those who have reported in green and those who have not in red. </h5></div>
     <div id="everythingelse">
     <form action="#">
@@ -45,7 +63,7 @@
           <label for="wellness">Wellness</label>
           <input type="checkbox" id="participation" name="reports" value="participation">
           <label for="participation">Participation</label>
-          <input type="checkbox" id="spre" name="reports" value="srpe">
+          <input type="checkbox" id="spre" name="reports" value="srpe" checked>
           <label for="spre">SRPE</label>
       </div>
         <label for="start_time">Time</label>
@@ -61,10 +79,18 @@
         <input type="submit" class="btn btn-primary" id="show-rep-btn" value="Show Reported" onclick="showAttendance()" />
         <input type="submit" class="btn btn-secondary" id="not-rep-btn" value="Show NOT Reported" onclick="showAbsence()" />
     </form>
-</div></div>
-    <div id="chart"></div>
-    <div id="textbox"></div>
 
+    <div id="chart"></div>
+    <div id="textbox" class="row">
+      <div id="left-text" > <!-- class="col-sm-6" -->
+        
+      </div>
+      <div class="col-sm-1"></div>
+      <div id="right-text"><!-- class="col-sm-6" -->
+        
+      </div>
+    </div>
+  </div></div>
 
 
     <!-- Load d3.js and c3.js -->

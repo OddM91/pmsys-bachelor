@@ -20,11 +20,22 @@
       body{
         margin: 0;
       }
+
+      .report-array-style{
+           border-collapse: collapse;
+           text-align: center;
+           
+           table-layout: auto;
+       }
+        table, th, td {
+            border: 1px solid black;
+        }
+
       .container{
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        align-items: center;
+        
       }
       #intro-text{
         width: 80%;
@@ -33,9 +44,9 @@
     </style>
     
 </head>
-<body>
-    <center><h1><a href="{{ url_for('version1') }}">Version 1</a> - <a href="{{ url_for('version2') }}">Version 2</a> - <a href="{{ url_for('version3') }}">Version 3</a></h1></center>
-    <div class="container"><div id="intro-text"><h5>Version 1 has a bar design, grouping bars next to each other for each report type selected. You can click each individual bar and it will display a list of who hasn't reported that day. </h5></div></div>
+<body>   <!--  Currently not in use:  - <a href="{{ url_for('version3') }}">Version 3</a>  -->
+    <center><h1><a href="{{ url_for('version1') }}">Version 1</a> - <a href="{{ url_for('version2') }}">Version 2</a></h1></center>
+    <div class="container"><div id="intro-text"><h5>Version 1 has a bar design, grouping bars next to each other for each report type selected. You can click each individual bar and it will display a list of who hasn't reported that day. </h5></div>
     <form action="#">
       <div id="checkboxlist">
           <label for="report">Reports: </label>
@@ -63,10 +74,17 @@
     </form>
     
     <div id="chart"></div>
-    <div id="textbox"></div>
+    <div id="textbox" class="row">
+      <div id="left-text" > <!-- class="col-sm-6" -->
+        
+      </div>
+      <div class="col-sm-1"></div>
+      <div id="right-text"><!-- class="col-sm-6" -->
+        
+      </div>
+    </div>
 
-
-
+  </div>
     <!-- Load d3.js and c3.js -->
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="{{ url_for('static', filename='templates/c3/c3.min.js') }}"></script>

@@ -1,4 +1,6 @@
 var ignoredPlayers = [];
+var notifyList = [];
+var listOfAbsence = [];
 localStorage.setItem("ignored_players", JSON.stringify(ignoredPlayers));
 
 $(function(){
@@ -29,17 +31,20 @@ $(function(){
     let teamInput = $("#team").val();
 
     // Because of testing reasons I override the input with static input for more reasonable opening view. 
-    reportInput = "wellness";
+    reportInput = "wellness,srpe";
     starttimeInput = "2021-05-01";
     endtimeInput = "2021-05-31";
     teamInput = "59b8149";
 
-    url = "/api/stat?report=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
+    url = "/api/stats/initv1?reports=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
 
     $.get(url, function (data){
         console.log("Fetching stats");
+        console.log(data[0]);
 
-        displayStats(data);
+        displayStats(data[0]);
+        makeAbsenceList(data[2]);
+        displayArray(data[1]);
 
     });
 
@@ -47,6 +52,12 @@ $(function(){
     $("form").submit(function() { return false; });
     
 });
+
+function makeAbsenceList(data){
+    console.log("In MakeAbsenceList right now !!!-------------------");
+    listOfAbsence = data;
+    console.log(listOfAbsence);
+}
 
 function showAttendance(){
     var btn = document.getElementById("show-rep-btn");
@@ -69,11 +80,13 @@ function showAttendance(){
     let teamInput = $("#team").val();
 
     // This URI will return how many reports where submitted between the selected dates. 
-    url = "/api/stat?report=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
+    // Format: /api/stat?reports=XYZ&&start_time=XYZ&&end_time=XYZ&&team=XYZ&&ignore=XYZ
+    url = "/api/stat?reports=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
 
 
     $.get(url, function(data){
-        displayStats(data);
+        displayStats(data[0]);
+        makeAbsenceList(data[1]);
     });
 
 }
@@ -98,21 +111,38 @@ function showAbsence(){
     let teamInput = $("#team").val();
     
     // This URI will return how many HASN'T reported for each day within the date range. 
-    url = "/api/stat/onlyabsent?report=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput  + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
+    // Format: /api/stat/onlyabsent?reports=XYZ&&start_time=XYZ&&end_time=XYZ&&team=XYZ&&ignore=XYZ
+    url = "/api/stat/onlyabsent?reports=" + reportInput + "&&start_time=" + starttimeInput + "&&end_time=" + endtimeInput + "&&team=" + teamInput  + "&&ignore=" + JSON.parse(localStorage.getItem("ignored_players"));
 
     $.get(url, function(data){
-        displayStats(data);
+        displayStats(data[0]);
+        makeAbsenceList(data[1]);
     });
 }
 
 function ignorePlayer(name, id){
-    let ignore_list = JSON.parse(localStorage.getItem("ignored_players"));
-    ignore_list.push(name);
-    localStorage.setItem("ignored_players", JSON.stringify(ignore_list));
+
+    // Checking for Ignore or Unignore. 
     var btn = document.getElementById(id);
-    btn.innerHTML = "Ignored";
-    document.getElementById(id).classList.remove("btn-info");
-    document.getElementById(id).classList.add("btn-dark");
+    let ignore_list = JSON.parse(localStorage.getItem("ignored_players"));
+
+    if(btn.classList.contains("btn-info")){
+        btn.innerHTML = "Unignore";
+        document.getElementById(id).classList.remove("btn-info");
+        document.getElementById(id).classList.add("btn-dark");
+        ignore_list.push(name);        
+    }
+    else{
+        btn.innerHTML = "Ignore";
+        document.getElementById(id).classList.remove("btn-dark");
+        document.getElementById(id).classList.add("btn-info");
+        ignore_list.splice(ignore_list.indexOf(name), 1)
+    }
+        
+    
+    
+    localStorage.setItem("ignored_players", JSON.stringify(ignore_list));
+    
     let report_display_check = document.getElementById("show-rep-btn");
     if (report_display_check.classList.contains("btn-primary")){
         showAttendance();
@@ -177,11 +207,38 @@ function displayStats(data){
                     output += "</table>"
                     
                     report_name = d.id.charAt(0).toUpperCase() + d.id.slice(1);
-                    $("#textbox").html("<h4>" + report_name + " - " + date.toDateString().split(' ').slice(1, 3).join(' ') + "</h4>" + output);
+                    $("#right-text").html("<h4>" + report_name + " - " + date.toDateString().split(' ').slice(1, 3).join(' ') + "</h4>" + output);
 
                 });
                 
             },
+        },
+        tooltip: {
+            contents: function (d, defaultTitleFormat, defaultValueFormat, color){
+                
+                let index = parseInt(d[0].x);
+                let aDate = listOfAbsence[index][0].split(' ').slice(1, 3).join(' ');
+                
+                
+                
+                let output = `<table class='${this.CLASS.tooltip}'><th style=\"width: 1%\">${aDate}</th><tbody>`;
+                for (let i in listOfAbsence[index]){
+                    if (i == 0){
+                        continue;
+                    }
+                    output += `<tr><td style=\"display: flex; justify-content: flex-start; align-items: baseline; align-content: flex-start; \"><div class=\"toolcolor\" style=\"background-color:${color(d[i-1].id)}\"></div> &nbsp;` + listOfAbsence[index][i][0] + "</td></tr>"
+                    if (listOfAbsence[index][i][1][0] === undefined || listOfAbsence[index][i][1][0].lenght == 0){   
+                        output += "<tr><td style=\"width: 1%\">All reports in.</td></tr>";  
+                    }
+                    for (let j in listOfAbsence[index][i][1]){
+                        output += "<tr><td style=\"width: 1%\">" + listOfAbsence[index][i][1][j] + "</td></tr>";
+                    }
+                       
+                }
+
+                output += `</tbody></table>`;
+                return output;
+            }
         },
         axis: {
             x: {
@@ -213,6 +270,87 @@ function displayStats(data){
         }    
     });
 
+}
+
+function displayArray(data){
+
+    let teamInput = $("#team").val();
+
+    teamInput = checkTeam(teamInput);
+
+    // Not a lot of days and teams make sense to observe so these are put here as default for testing. 
+    // teamInput = "Team 3"
+
+    output = "<h5>Today's reports for " + teamInput + "</h5>";
+
+    output += "<table class=\"report-array-style\">";
+
+    // Prints Headers, meaning the name of the reports.
+    output += "<th>"
+    for (let r in data[0]){
+        output += "<td style=\"width: 120px;>\">" + data[0][r] + "</td>";
+    }
+    output += "<td>Ignore</th>"
+
+    id = 0;
+    notifyList = [];
+    for (let d in data){        // Per player
+        let notifyNeeded = [];
+        // skipping headers.
+        if (d == 0){
+            console.log(data)
+            notifyList.push(data[0]);
+            for(let a in data[0]){
+                notifyList.push([]);
+            }
+            continue;
+        }
+        output += "<tr>";
+        for (let i in data[d]){     // Per Report that player has. 
+            id += 1;
+            if (data[d][i] == 1)
+                output += "<td style=\"background-color: lawngreen;\">OK</td>";
+            else if (data[d][i] == 0){
+                notifyList[i].push(data[d][0]);
+                output += "<td style=\"background-color: red;\">NONE</td>";
+            }
+            else
+                output += "<td>" + data[d][i] + "</td>";
+        }
+        output += "<td><button id=\""+ id + "\" class=\"btn btn-info mx-auto\" value=\"ignore\" onclick=\"ignorePlayer(\'"+ data[d][0] + "\', " + id + ")\">Ignore</button></td></tr>";
+        
+    }
+    output += "<tr><td></td>"
+    for (let r in data[0]){
+        output += "<td><button id=\"repID"+ r + "\" class=\"btn btn-danger mx-auto\" value=\"notify\" onclick=\"notifyAll(" + r + ")\">Notify All</button></td>"
+    }
+
+    output += "<td></td></tr></table>";
+    $("#left-text").html(output);
+    
+}
+
+function notifyAll(repID){
+    id = "repID" + repID;
+    var btn = document.getElementById(id);
+    btn.innerHTML = "Notifed";
+    report = notifyList[0][repID];
+    alert("Sent notification to: " + notifyList[repID+1] + "\nFor report: " + report);
+}
+
+function checkTeam(teamid){
+    if(teamid == "59b8149")
+        return "Team 1";
+    else if (teamid == "59b8148")
+        return "Team 2";
+    else 
+        return "Team 3";
+}
+
+function notify(name, report, id){
+    var btn = document.getElementById(id);
+    btn.innerHTML = "Notifed";
+    alert("Sent notification to: " + name + "\nFor report: " + report);
 }
 
 function checkall(source){
