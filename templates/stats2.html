@@ -38,7 +38,7 @@
           align-items: center;
         }
         #intro-text{
-          width: 80%;
+          
           text-align: center;
         }
 
@@ -48,49 +48,63 @@
           border: 1px solid rgba(0, 0, 0, .2);
           
         }
+
+        #everythingelse{
+          width: 100%;
+        }
+
+        
+      #checkboxlist{
+        font-size: 18px;
+      }
+
+        
       </style>
 </head>
 <body>           <!--  Currently not in use:  - <a href="{{ url_for('version3') }}">Version 3</a>  -->
-    <center><h1><a href="{{ url_for('version1') }}">Version 1</a> - <a href="{{ url_for('version2') }}">Version 2</a></h1></center>
-    <div class="container"><div id="intro-text"><h5>Version 2 has a line design, this might be more visually pleasing when viewing a longer timeframe. However it isn't possible to interact with overlapping datapoints and so if there are overlap in a point of interest you can turn off a report below the graph. Clicking a point will display all players on the team. Those who have reported in green and those who have not in red. </h5></div>
-    <div id="everythingelse">
-    <form action="#">
-      <div id="checkboxlist">
-          <label for="report">Reports:</label>
-          <input type="checkbox" onclick="checkall(this)" id="all" class="selectall" value="Select All">
-          <label for="all">Select All</label>
-          <input type="checkbox" id="wellness" name="reports" value="wellness" checked>
-          <label for="wellness">Wellness</label>
-          <input type="checkbox" id="participation" name="reports" value="participation">
-          <label for="participation">Participation</label>
-          <input type="checkbox" id="spre" name="reports" value="srpe" checked>
-          <label for="spre">SRPE</label>
-      </div>
-        <label for="start_time">Time</label>
-        <input type="date" id="start_time" name="start_time">
-        <label for="end_time">Time</label>
-        <input type="date" id="end_time" name="end_time">
-        <label for="team">Team</label>
-        <select name="teams" id="team">
-          <option value="59b8149">Team 1</option>
-          <option value="59b8148">Team 2</option>
-          <option value="59b6e">Team 3</option>
-        </select>
-        <input type="submit" class="btn btn-primary" id="show-rep-btn" value="Show Reported" onclick="showAttendance()" />
-        <input type="submit" class="btn btn-secondary" id="not-rep-btn" value="Show NOT Reported" onclick="showAbsence()" />
-    </form>
+  <center><h1>pmSys Concept - Player Report Count</h1></center>
+  <center><h2><a href="{{ url_for('version1') }}">Version 1</a> - <a href="{{ url_for('version2') }}">Version 2</a></h2></center>
+    <div class="container">
+      <div id="intro-text"><h6>Version 2 has a line design, this might be more visually pleasing when viewing a longer timeframe. The information of who hasn't reported is now in the tooltip. The graph below now has a "Notify All" option at the bottom which will instead send notifications to all who are missing that report. </h6></div>
+      <div id="everythingelse">
+        <form action="#">
+          <div id="checkboxlist">
+              <label for="report">Reports:</label>
+              <input type="checkbox" onclick="checkall(this)" id="all" class="selectall" value="Select All" checked>
+              <label for="all">Select All</label>
+              <input type="checkbox" id="wellness" name="reports" value="wellness" checked>
+              <label for="wellness">Wellness</label>
+              <input type="checkbox" id="participation" name="reports" value="participation" checked>
+              <label for="participation">Participation</label>
+              <input type="checkbox" id="spre" name="reports" value="srpe" checked>
+              <label for="spre">SRPE</label>
+          </div>
+            <label for="start_time">Time</label>
+            <input type="date" id="start_time" name="start_time">
+            <label for="end_time">Time</label>
+            <input type="date" id="end_time" name="end_time">
+            <label for="team">Team</label>
+            <select name="teams" id="team">
+              <option value="59b8149">Team 1</option>
+              <option value="59b8148">Team 2</option>
+              <option value="59b6e">Team 3</option>
+            </select>
+            <input type="submit" class="btn btn-primary" id="show-rep-btn" value="Show Reported" onclick="showAttendance()" />
+            <input type="submit" class="btn btn-secondary" id="not-rep-btn" value="Show NOT Reported" onclick="showAbsence()" />
+        </form>
 
-    <div id="chart"></div>
-    <div id="textbox" class="row">
-      <div id="left-text" > <!-- class="col-sm-6" -->
-        
-      </div>
-      <div class="col-sm-1"></div>
-      <div id="right-text"><!-- class="col-sm-6" -->
-        
+        <div id="chart"></div>
+        <div id="textbox" class="row">
+          <div id="left-text" class="mx-auto" style="text-align: center;"> <!-- class="col-sm-6" -->
+            
+          </div>
+          <!--<div class="col-sm-1"></div>
+          <div id="right-text"> class="col-sm-6" 
+            
+          </div>-->
+        </div>
       </div>
     </div>
-  </div></div>
 
 
     <!-- Load d3.js and c3.js -->

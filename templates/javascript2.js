@@ -25,13 +25,15 @@ $(function(){
 
     // Initial fetch of stats from the last week. 
 
-    let reportInput = $("#report").val();
+    let reportInput = $("input[type=checkbox][name=reports]:checked").map(function(){
+        return $(this).val();
+    }).get();
     let starttimeInput = $("#start_time").val();
     let endtimeInput = $("#end_time").val();
     let teamInput = $("#team").val();
 
     // Because of testing reasons I override the input with static input for more reasonable opening view. 
-    reportInput = "wellness,srpe";
+    // reportInput = "wellness,srpe";
     starttimeInput = "2021-05-01";
     endtimeInput = "2021-05-31";
     teamInput = "59b8149";
@@ -152,6 +154,50 @@ function ignorePlayer(name, id){
     }
 }
 
+function convertName(autotokenid){
+    if (autotokenid == "auth0|59b814967091e711e630026d"){
+        return "Archie Calvin";
+    }
+    else if (autotokenid == "auth0|59b814917091e711e6300265"){
+        return "Sammy Radclyffe";
+    }else if (autotokenid == "auth0|59b814917091e711e6300266"){
+        return "Shane Gladwyn";
+    }else if (autotokenid == "auth0|59b814907091e711e6300264"){
+        return "Rocky Dom";
+    }else if (autotokenid == "auth0|59b814967091e711e6300268"){
+        return "Albie Alastair";
+    }else if (autotokenid == "auth0|59b814947091e711e630026a"){
+        return "Braiden Ronnie";
+    }else if (autotokenid == "auth0|59b814967091e711e6300266"){
+        return "Ben Schuyler";
+    }else if (autotokenid == "auth0|59b81492cbb73b1e63a1cbc5"){
+        return "Lambert Peyton";
+    }else if (autotokenid == "auth0|59b81494c71350685f02daa6"){
+        return "Harry Julian";
+    }else if (autotokenid == "auth0|59b81499cbb73b1e63a1cbc8"){
+        return "Richie Shelley";
+    }else if (autotokenid == "auth0|59b814937091e711e6300269"){
+        return "Blaze Merrill";
+    }else if (autotokenid == "auth0|59b814967091e711e630026c"){
+        return "Raynard Darcy";
+    }else if (autotokenid == "auth0|59b81495c71350685f02daa7"){
+        return "Nikolas Maximilian";
+    }else if (autotokenid == "auth0|59b81497cbb73b1e63a1cbc7"){
+        return "Rodger Fearghas";
+    }else if (autotokenid == "auth0|59b81490cbb73b1e63a1cbc4"){
+        return "Rory Chet";
+    }else if (autotokenid == "auth0|59b814937091e711e6300268"){
+        return "Alpha Bodhi";
+    }else if (autotokenid == "auth0|59b81497cbb73b1e63a1cbc6"){
+        return "Norwood Pip";
+    }
+    else{
+        console.log(autotokenid);
+        return "Who is this?";        
+    }
+}
+
+
 function displayStats(data){
     
     // First it creates the Stats array, this first word put in will be the name of the collums shown under the grid. 
@@ -228,10 +274,10 @@ function displayStats(data){
                     }
                     output += `<tr><td style=\"display: flex; justify-content: flex-start; align-items: baseline; align-content: flex-start; \"><div class=\"toolcolor\" style=\"background-color:${color(d[i-1].id)}\"></div> &nbsp;` + listOfAbsence[index][i][0] + "</td></tr>"
                     if (listOfAbsence[index][i][1][0] === undefined || listOfAbsence[index][i][1][0].lenght == 0){   
-                        output += "<tr><td style=\"width: 1%\">All reports in.</td></tr>";  
+                        output += "<tr><td style=\"width: 1%\"><i>All reports in.</i></td></tr>";  
                     }
                     for (let j in listOfAbsence[index][i][1]){
-                        output += "<tr><td style=\"width: 1%\">" + listOfAbsence[index][i][1][j] + "</td></tr>";
+                        output += "<tr><td style=\"width: 1%\"><b>" + convertName(listOfAbsence[index][i][1][j]) + "</b></td></tr>";
                     }
                        
                 }
@@ -286,9 +332,9 @@ function displayArray(data){
     output += "<table class=\"report-array-style\">";
 
     // Prints Headers, meaning the name of the reports.
-    output += "<th>"
+    output += "<th style=\"width: 160px;\">"
     for (let r in data[0]){
-        output += "<td style=\"width: 120px;>\">" + data[0][r] + "</td>";
+        output += "<td style=\"width: 120px;\">" + data[0][r] + "</td>";
     }
     output += "<td>Ignore</th>"
 
@@ -315,7 +361,7 @@ function displayArray(data){
                 output += "<td style=\"background-color: red;\">NONE</td>";
             }
             else
-                output += "<td>" + data[d][i] + "</td>";
+                output += "<td align=\"left\" style=\"padding-left: 12px;\"> " + convertName(data[d][i]) + "</td>";
         }
         output += "<td><button id=\""+ id + "\" class=\"btn btn-info mx-auto\" value=\"ignore\" onclick=\"ignorePlayer(\'"+ data[d][0] + "\', " + id + ")\">Ignore</button></td></tr>";
         
@@ -335,7 +381,7 @@ function notifyAll(repID){
     var btn = document.getElementById(id);
     btn.innerHTML = "Notifed";
     report = notifyList[0][repID];
-    alert("Sent notification to: " + notifyList[repID+1] + "\nFor report: " + report);
+    alert("Sent notification to: " + convertName(notifyList[repID+1]) + "\nFor report: " + report);
 }
 
 function checkTeam(teamid){

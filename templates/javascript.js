@@ -149,7 +149,7 @@ function displayStats(data){
                     let output = "";
                     if(data[0].length > 0){
                         for (let i in data[0]){
-                            output += data[0][i] + "<br />";
+                            output += convertName(data[0][i]) + "<br />";
                         }
                     }else{
                         output = "No missing reports."
@@ -224,6 +224,49 @@ function displayStats(data){
 
 }
 
+function convertName(autotokenid){
+    if (autotokenid == "auth0|59b814967091e711e630026d"){
+        return "Archie Calvin";
+    }
+    else if (autotokenid == "auth0|59b814917091e711e6300265"){
+        return "Sammy Radclyffe";
+    }else if (autotokenid == "auth0|59b814917091e711e6300266"){
+        return "Shane Gladwyn";
+    }else if (autotokenid == "auth0|59b814907091e711e6300264"){
+        return "Rocky Dom";
+    }else if (autotokenid == "auth0|59b814967091e711e6300268"){
+        return "Albie Alastair";
+    }else if (autotokenid == "auth0|59b814947091e711e630026a"){
+        return "Braiden Ronnie";
+    }else if (autotokenid == "auth0|59b814967091e711e6300266"){
+        return "Ben Schuyler";
+    }else if (autotokenid == "auth0|59b81492cbb73b1e63a1cbc5"){
+        return "Lambert Peyton";
+    }else if (autotokenid == "auth0|59b81494c71350685f02daa6"){
+        return "Harry Julian";
+    }else if (autotokenid == "auth0|59b81499cbb73b1e63a1cbc8"){
+        return "Richie Shelley";
+    }else if (autotokenid == "auth0|59b814937091e711e6300269"){
+        return "Blaze Merrill";
+    }else if (autotokenid == "auth0|59b814967091e711e630026c"){
+        return "Raynard Darcy";
+    }else if (autotokenid == "auth0|59b81495c71350685f02daa7"){
+        return "Nikolas Maximilian";
+    }else if (autotokenid == "auth0|59b81497cbb73b1e63a1cbc7"){
+        return "Rodger Fearghas";
+    }else if (autotokenid == "auth0|59b81490cbb73b1e63a1cbc4"){
+        return "Rory Chet";
+    }else if (autotokenid == "auth0|59b814937091e711e6300268"){
+        return "Alpha Bodhi";
+    }else if (autotokenid == "auth0|59b81497cbb73b1e63a1cbc6"){
+        return "Norwood Pip";
+    }
+    else{
+        console.log(autotokenid);
+        return "Who is this?";        
+    }
+}
+
 function displayArray(data){
 
     let teamInput = $("#team").val();
@@ -238,31 +281,65 @@ function displayArray(data){
     output += "<table class=\"report-array-style\">";
 
     // Prints Headers, meaning the name of the reports.
-    output += "<th>"
+    output += "<th style=\"width: 160px;\">"
     for (let r in data[0]){
         output += "<td style=\"width: 120px;>\">" + data[0][r] + "</td>";
     }
     output += "</th>"
-
+    let id = 0;
     for (let d in data){
         // skipping headers.
         if (d == 0)
             continue;
         output += "<tr>"
         for (let i in data[d]){
+            id += 1;
             if (data[d][i] == 1)
                 output += "<td style=\"background-color: lawngreen;\">OK</td>";
             else if (data[d][i] == 0)
                 output += "<td style=\"background-color: red;\"><button id=\""+ d + i + "\" class=\"btn btn-dark mx-auto\" value=\"notify\" onclick=\"notify(\'"+ data[d][0] + "\', \'" + data[0][i-1] + "\', "+ d + i + ")\">NOTIFY!</button></td>";
             else
-                output += "<td>" + data[d][i] + "</td>";
+                output += "<td align=\"left\" style=\"padding-left: 12px;\">" + convertName(data[d][i]) + "</td>";
         }
+        output += "<td><button id=\""+ id + "\" class=\"btn btn-info mx-auto\" value=\"ignore\" onclick=\"ignorePlayer(\'"+ data[d][0] + "\', " + id + ")\">Ignore</button></td>";
         output += "</tr>"
         
     }    
     output += "</table>"
     $("#left-text").html(output);
     
+}
+
+function ignorePlayer(name, id){
+
+    // Checking for Ignore or Unignore. 
+    var btn = document.getElementById(id);
+    let ignore_list = JSON.parse(localStorage.getItem("ignored_players"));
+
+    if(btn.classList.contains("btn-info")){
+        btn.innerHTML = "Unignore";
+        document.getElementById(id).classList.remove("btn-info");
+        document.getElementById(id).classList.add("btn-dark");
+        ignore_list.push(name);        
+    }
+    else{
+        btn.innerHTML = "Ignore";
+        document.getElementById(id).classList.remove("btn-dark");
+        document.getElementById(id).classList.add("btn-info");
+        ignore_list.splice(ignore_list.indexOf(name), 1)
+    }
+        
+    
+    
+    localStorage.setItem("ignored_players", JSON.stringify(ignore_list));
+    
+    let report_display_check = document.getElementById("show-rep-btn");
+    if (report_display_check.classList.contains("btn-primary")){
+        showAttendance();
+    }
+    else{
+        showAbsence();
+    }
 }
 
 function notify(name, report, id){
