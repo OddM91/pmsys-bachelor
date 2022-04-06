@@ -27,8 +27,13 @@
            
            table-layout: auto;
        }
-        table, th, td {
+       /* table, th, td {
             border: 1px solid black;
+        }*/
+
+        .ignore-btn-td, .notify-btn-td{
+          padding: 5px !important;
+          margin: 0 !important;
         }
 
       .container{
@@ -64,12 +69,12 @@
           <input type="checkbox" id="spre" name="reports" value="srpe" checked>
           <label for="spre">SRPE</label>
       </div>
-        <label for="start_time">Time</label>
+        <span style="font-size: 18px;"><label for="start_time">From: </label></span>
         <input type="date" id="start_time" name="start_time">
-        <label for="end_time">Time</label>
+        <span style="font-size: 18px;"><label for="end_time">To: </label></span>
         <input type="date" id="end_time" name="end_time">
-        <label for="team">Team</label>
-        <select name="teams" id="team">
+        <span style="font-size: 18px;"><label for="team">Team: </label></span>
+        <select class="custom-select" style="width: 100px;" name="teams" id="team">
           <option value="59b8149">Team 1</option>
           <option value="59b8148">Team 2</option>
           <option value="59b6e">Team 3</option>

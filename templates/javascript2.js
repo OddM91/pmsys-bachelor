@@ -327,16 +327,19 @@ function displayArray(data){
     // Not a lot of days and teams make sense to observe so these are put here as default for testing. 
     // teamInput = "Team 3"
 
-    output = "<h5>Today's reports for " + teamInput + "</h5>";
+    output = "<h5 style=\"font-family: Verdana; \">Today's reports for " + teamInput + "</h5>";
 
-    output += "<table class=\"report-array-style\">";
+    output += "<table class=\"table table-bordered\"><thead class=\"thead-light\"><tr>";
 
     // Prints Headers, meaning the name of the reports.
-    output += "<th style=\"width: 160px;\">"
+    output += "<th scope=\"col\" style=\"width: 160px;\">Name</th>"
     for (let r in data[0]){
-        output += "<td style=\"width: 120px;\">" + data[0][r] + "</td>";
+        let header = data[0][r].charAt(0).toUpperCase() + data[0][r].slice(1);
+        if(header == "Srpe")
+            header = "SRPE"
+        output += "<th scope=\"col\" style=\"width: 120px;\">" + header + "</th>";
     }
-    output += "<td>Ignore</th>"
+    output += "<th>Ignore</th></tr></thead>"
 
     id = 0;
     notifyList = [];
@@ -351,19 +354,19 @@ function displayArray(data){
             }
             continue;
         }
-        output += "<tr>";
+        output += "<tbody class=\"align-middle\"><tr>";
         for (let i in data[d]){     // Per Report that player has. 
             id += 1;
             if (data[d][i] == 1)
-                output += "<td style=\"background-color: lawngreen;\">OK</td>";
+                output += "<td class=\"table-success\">OK</td>";
             else if (data[d][i] == 0){
                 notifyList[i].push(data[d][0]);
-                output += "<td style=\"background-color: red;\">NONE</td>";
+                output += "<td class=\"table-danger\">NONE</td>";
             }
             else
-                output += "<td align=\"left\" style=\"padding-left: 12px;\"> " + convertName(data[d][i]) + "</td>";
+                output += "<td scope=\"row\" align=\"left\" style=\"padding-left: 12px;\"> " + convertName(data[d][i]) + "</td>";
         }
-        output += "<td><button id=\""+ id + "\" class=\"btn btn-info mx-auto\" value=\"ignore\" onclick=\"ignorePlayer(\'"+ data[d][0] + "\', " + id + ")\">Ignore</button></td></tr>";
+        output += "<td class=\"ignore-btn-td\"><button id=\""+ id + "\" class=\"btn btn-info mx-auto\" value=\"ignore\" onclick=\"ignorePlayer(\'"+ data[d][0] + "\', " + id + ")\">Ignore</button></td></tr>";
         
     }
     output += "<tr><td></td>"
@@ -371,7 +374,7 @@ function displayArray(data){
         output += "<td><button id=\"repID"+ r + "\" class=\"btn btn-danger mx-auto\" value=\"notify\" onclick=\"notifyAll(" + r + ")\">Notify All</button></td>"
     }
 
-    output += "<td></td></tr></table>";
+    output += "<td></td></tr></tbody></table>";
     $("#left-text").html(output);
     
 }
