@@ -384,7 +384,13 @@ function notifyAll(repID){
     var btn = document.getElementById(id);
     btn.innerHTML = "Notifed";
     report = notifyList[0][repID];
-    alert("Sent notification to: " + convertName(notifyList[repID+1]) + "\nFor report: " + report);
+    let playerList = "";
+    for (let p in notifyList[repID+1]){
+        playerList += notifyList[repID+1][p];
+        playerList +=", "
+    }
+    playerList = playerList.slice(0, -2);
+    alert("Sent notification to: " + playerList + "\nFor report: " + report);
 }
 
 function checkTeam(teamid){

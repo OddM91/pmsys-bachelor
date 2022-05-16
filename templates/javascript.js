@@ -349,6 +349,7 @@ function ignorePlayer(name, id){
 function notify(name, report, id){
     var btn = document.getElementById(id);
     btn.innerHTML = "Notifed";
+    name = convertName(name);
     alert("Sent notification to: " + name + "\nFor report: " + report);
 }
 

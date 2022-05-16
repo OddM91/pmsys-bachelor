@@ -69,7 +69,10 @@ def getReportStat(called=0):
     print("SQL ready ignore list: {}".format(ignore_string))
 
     for r in reports:
-        cur.execute("SELECT DATE(created), count(DISTINCT owner) FROM datapoints WHERE schema_name='{}' AND created>='{}' AND created<='{}' AND owner LIKE '%{}%' AND owner NOT IN {} GROUP BY DATE(created) ORDER BY DATE(created);".format(r, args2, args4, args3, ignore_string))
+        cur.execute("""SELECT DATE(created), count(DISTINCT owner) 
+                        FROM datapoints 
+                        WHERE schema_name='{}' AND created>='{}' AND created<='{}' AND owner LIKE '%{}%' AND owner NOT IN {} 
+                        GROUP BY DATE(created) ORDER BY DATE(created);""".format(r, args2, args4, args3, ignore_string))
         db_query = cur.fetchall()
         db_query.insert(0, r)
         all_data.append(db_query)
@@ -244,7 +247,7 @@ def getTodaysReport(called=0):
                 WHERE schema_name='{}' AND owner LIKE '%{}%' AND to_date(CAST(created as char(10)), 'YYYY-MM-DD') ='{}' 
                 ORDER BY(owner);""".format( r, team, date))
         db_query = cur.fetchall()
-        db_list = [list(i) for i in db_query] # Converts puple to list
+        db_list = [list(i) for i in db_query] # Converts tuple to list
 
         # Loops through all players and checks if the name can be found in the reported list. 
         # And if it is found appends 1 and if not found it will trigger an error which is caught and adjusts the check accordingly. 
