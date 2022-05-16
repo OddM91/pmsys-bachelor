@@ -386,7 +386,7 @@ function notifyAll(repID){
     report = notifyList[0][repID];
     let playerList = "";
     for (let p in notifyList[repID+1]){
-        playerList += notifyList[repID+1][p];
+        playerList += convertName(notifyList[repID+1][p]);
         playerList +=", "
     }
     playerList = playerList.slice(0, -2);
